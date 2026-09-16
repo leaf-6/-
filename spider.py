@@ -20,7 +20,7 @@ def scrape_keyword(page: Page, keyword: str):
     results = []
 
     print(f"\n[关键词: {keyword}] 从第 {page_num} 页开始")
-
+    empty_pages = 0
     while True:
         # if page_num >= MAX_PAGES:
         #     print(" 已达到安全上限，强制停止")
@@ -34,6 +34,15 @@ def scrape_keyword(page: Page, keyword: str):
         page.wait_for_timeout(random.randint(1000, 2000))
 
         books = parse_books_from_page(page)
+
+        if not books:
+            empty_pages += 1
+            print(f" 本页无书（连续 {empty_pages} 页）")
+            if empty_pages >= 10:
+                print(" 连续 10 页无书，结束爬取")
+                break
+        else:
+            empty_pages = 0 #有书就清零
 
         for b in books:
             book_url = b[5]
@@ -52,11 +61,6 @@ def scrape_keyword(page: Page, keyword: str):
     
         page_num += 1
         save_progress(keyword, page_num, detail_done)
-
-        if not books:
-            print(" 本页无书，结束")
-            break
-
         time.sleep(random.uniform(2, 4))
 
     results.sort(key=lambda x: x[1], reverse=True)
