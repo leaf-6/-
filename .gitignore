@@ -1,0 +1,13 @@
+# Python 基础
+__pycache__/
+*.py[cod]
+.venv/
+
+# 爬虫本地运行数据（重点忽略）
+douban_progress.json
+douban_state.json
+*.xlsx
+
+# 编辑器
+.vscode/
+.idea/
