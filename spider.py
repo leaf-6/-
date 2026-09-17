@@ -38,8 +38,9 @@ def scrape_keyword(page: Page, keyword: str):
         if not books:
             empty_pages += 1
             print(f" 本页无书（连续 {empty_pages} 页）")
-            if empty_pages >= 10:
-                print(" 连续 10 页无书，结束爬取")
+            if empty_pages >= 6:
+                print(f" 连续 10 页无书，{keyword}关键词结束爬取，暂停五分钟，再下一个关键词爬取")
+                time.sleep(300)
                 break
         else:
             empty_pages = 0 #有书就清零

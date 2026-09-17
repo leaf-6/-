@@ -20,23 +20,32 @@ def main():
             headless=False,
             args=["--disable-blink-features=AutomationControlled"]
         )
-        context = browser.new_context(
-            storage_state=STATE_FILE,
-            user_agent=USER_AGENT
-        )
-        context.add_init_script(
-            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
-        )
-        page = context.new_page()
-
-        if not check_login(page):
-            raise SystemExit("登录态失效，请重新登录")
-
         for kw in KEYWORDS:
+            print(f"\n开始爬取关键词:{kw}")
+
+            context = browser.new_context(
+                storage_state=STATE_FILE,
+                user_agent=USER_AGENT
+            )
+            context.add_init_script(
+                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+            )
+            page = context.new_page()
+
+            # 登录态校验（每个 context 都校验，更安全）
+            if not check_login(page):
+                raise SystemExit("登录态失效，请重新登录")
+
+
             books = scrape_keyword(page, kw)
             all_books[kw] = books
 
-            time.sleep(random.uniform(5, 8))
+            page.close()
+            context.close()
+
+
+            print(f"关键词 [{kw}] 爬取完成，休息中...")
+            time.sleep(random.uniform(60, 180))
 
         browser.close()
 
